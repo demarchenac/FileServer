@@ -1,5 +1,6 @@
 com\mycompany\services\Configuration.class
 com\mycompany\models\ServerAddress.class
+com\mycompany\utils\Constants.class
 com\mycompany\services\FileController.class
 com\mycompany\models\SinglePropQuery.class
 com\mycompany\listeners\ServletContextManager.class
