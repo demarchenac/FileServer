@@ -6,23 +6,19 @@
 package com.mycompany.services;
 
 import com.google.gson.Gson;
-import com.mycompany.models.Response;
-import com.mycompany.models.SinglePropQuery;
-import java.io.BufferedReader;
+import com.mycompany.listeners.ServletContextManager;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -30,26 +26,31 @@ import org.apache.http.impl.client.HttpClients;
  */
 @Path("files")
 public class FileController {
-    private final String FILE_FOLDER = "D://DISTRIBUIDA/P1/FILES";
+    private final Properties props;
     private final Gson gson;
+    
     
     public FileController() {
         this.gson = new Gson();
+        
+        props = new Properties();
+            
+        try {
+            System.out.println("[FS] Loading props");
+            InputStream is = ServletContextManager.class.getClassLoader().getResourceAsStream("config.properties");
+            props.load(is);
+        } catch (IOException ex) {
+            Logger.getLogger(ServletContextManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String listAllFiles() throws UnknownHostException{
-        ArrayList<String> fileList = new ArrayList<String>();
-        File folder = new File(FILE_FOLDER);
-        File[] listOfFiles = folder.listFiles();
-
-        for (int i = 0; i < listOfFiles.length; i++) {
-            if (listOfFiles[i].isFile()) {
-              fileList.add(listOfFiles[i].getName());
-            }
-        }
-        
-        return gson.toJson(new Response(true, "", this.gson.toJson(fileList)));
+    @Path("/{filename}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response getFile(@PathParam("filename") String filename) {
+      File file = new File(props.getProperty("ROOT_FOLDER") +'/' +filename);
+      return Response.ok(file, MediaType.APPLICATION_OCTET_STREAM)
+          .header("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"" ) //optional
+          .build();
     }
 }
