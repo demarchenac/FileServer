@@ -5,4 +5,5 @@ com\mycompany\services\FileController.class
 com\mycompany\models\SinglePropQuery.class
 com\mycompany\listeners\ServletContextManager.class
 com\mycompany\services\UtilController.class
+com\mycompany\models\ServerRegistrationQuery.class
 com\mycompany\models\Response.class

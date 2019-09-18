@@ -24,9 +24,12 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
 
 import com.google.gson.Gson;
+import com.mycompany.models.ServerRegistrationQuery;
 
 import com.mycompany.models.SinglePropQuery;
 import com.mycompany.utils.Constants;
+import java.io.File;
+import java.util.ArrayList;
 
 /**
  *
@@ -34,8 +37,10 @@ import com.mycompany.utils.Constants;
  */
 public class ServletContextManager implements ServletContextListener{
 
-    private final Gson gson;
+    
+    private final String FILE_FOLDER = "D://DISTRIBUIDA/P1/FILES";
     private final Properties props;
+    private final Gson gson;
     
     public ServletContextManager() {
         System.out.println("Started File Server -> [FS]");
@@ -114,11 +119,20 @@ public class ServletContextManager implements ServletContextListener{
         // add header
         request.setHeader("User-Agent", Constants.USER_AGENT);
 
-        StringEntity entity 
-            = new StringEntity(
-                gson.toJson(
-                    new SinglePropQuery(
-                        InetAddress.getLocalHost().getHostAddress())));
+        ArrayList<String> fileList = new ArrayList<String>();
+        File folder = new File(FILE_FOLDER);
+        File[] listOfFiles = folder.listFiles();
+
+        for (int i = 0; i < listOfFiles.length; i++) {
+            if (listOfFiles[i].isFile()) {
+              fileList.add(listOfFiles[i].getName());
+            }
+        }
+        
+        ServerRegistrationQuery srq 
+                = new ServerRegistrationQuery(InetAddress.getLocalHost().getHostAddress(), fileList);
+        
+        StringEntity entity = new StringEntity(gson.toJson(srq));
         
         request.setEntity(entity);
         request.setHeader("Accept", "application/json");
