@@ -4,6 +4,7 @@ D:\Users\Demar\Code\JAVA\FileServer\src\main\java\com\mycompany\listeners\Servle
 D:\Users\Demar\Code\JAVA\FileServer\src\main\java\com\mycompany\models\ServerAddress.java
 D:\Users\Demar\Code\JAVA\FileServer\src\main\java\com\mycompany\models\ServerRegistrationQuery.java
 D:\Users\Demar\Code\JAVA\FileServer\src\main\java\com\mycompany\models\SinglePropQuery.java
+D:\Users\Demar\Code\JAVA\FileServer\src\main\java\com\mycompany\models\FileRegistrationQuery.java
 D:\Users\Demar\Code\JAVA\FileServer\src\main\java\com\mycompany\services\FileController.java
 D:\Users\Demar\Code\JAVA\FileServer\src\main\java\com\mycompany\models\Response.java
 D:\Users\Demar\Code\JAVA\FileServer\src\main\java\com\mycompany\utils\Constants.java
