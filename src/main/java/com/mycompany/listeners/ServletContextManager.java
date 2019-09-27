@@ -26,6 +26,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
 
 import com.google.gson.Gson;
+import com.mycompany.models.FileRegistrationQuery;
 import com.mycompany.models.Response;
 
 import com.mycompany.models.ServerRegistrationQuery;
@@ -78,6 +79,9 @@ public class ServletContextManager implements ServletContextListener{
                 System.out.println("[FS] Attempting to download File: " +filename);
                 do{
                     response = donwloadFile(props.getProperty("WebPool"), filename);
+                    if(response.equals("success!")){
+                        registerFileServer(props.getProperty("WebPool"), filename);
+                    }
                 }while(response.equals("retry"));
             }
             
@@ -285,5 +289,41 @@ public class ServletContextManager implements ServletContextListener{
             return null;
         }
         
+    }
+
+    private com.mycompany.models.Response registerFileServer(String serverPool, String filename) throws Exception {
+
+        String url = "http://" +serverPool +":8080/WebPool/api/files";
+
+        HttpClient client = HttpClients.createDefault();
+        HttpPut request = new HttpPut(url);
+
+        // add header
+        request.setHeader("User-Agent", Constants.USER_AGENT);
+        
+        FileRegistrationQuery frq 
+            = new FileRegistrationQuery(InetAddress.getLocalHost().getHostAddress(), filename);
+        
+        StringEntity entity = new StringEntity(gson.toJson(frq));
+        
+        request.setEntity(entity);
+        request.setHeader("Accept", "application/json");
+        request.setHeader("Content-type", "application/json");
+
+        System.out.println("[FS] Sending file registration request");
+        HttpResponse response = client.execute(request);
+        System.out.println("[FS] Response Code : " + 
+            response.getStatusLine().getStatusCode());
+
+        BufferedReader rd = new BufferedReader(
+            new InputStreamReader(response.getEntity().getContent()));
+
+        StringBuffer result = new StringBuffer();
+        String line = "";
+        while ((line = rd.readLine()) != null) {
+            result.append(line);
+        }
+
+        return gson.fromJson(result.toString(), com.mycompany.models.Response.class);
     }
 }
